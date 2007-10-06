@@ -1,6 +1,9 @@
-\documentclass[landscape]{slides}
+\documentclass{beamer}
 
-\usepackage{standard-slide-include}
+\mode<presentation>
+{ \usetheme{boxes} }
+
+\usepackage{graphicx}
 
 \title{scripts.mit.edu}
 \author{Quentin Smith and Anders Kaseorg}
@@ -9,11 +12,13 @@
 \begin{document}
 
 % Title slide - do not change
-\begin{slide}
-    \thispagestyle{empty}
-    \maketitle
-\end{slide}
+\begin{frame}
+    \titlepage
+\end{frame}
 
 \include{contents}
+\include{apache}
+\include{AFS}
+\include{signup}
 
 \end{document}
