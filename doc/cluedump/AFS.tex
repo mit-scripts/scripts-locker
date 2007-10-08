@@ -1,0 +1,52 @@
+\section{AFS}
+
+\begin{frame}
+  \frametitle{AFS access controls}
+  \begin{itemize}
+  \item AFS enforces server side access controls.
+  \item On Athena systems: user's password $\to$ Kerberos tickets
+    $\to$ AFS tokens, which authenticate the client to the AFS server.
+  \item On scripts, we don't have the user's password or tickets.
+  \item User's scripts are not publicly readable.
+  \item Access is controlled through a single {\tt daemon.scripts} AFS
+    user.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Isolating users on scripts}
+  \begin{itemize}
+  \item If all users share {\tt daemon.scripts} AFS tokens, how are
+    they prevented from accessing each other's {\tt web\_scripts}?
+  \item On scripts, we enforce an additional restriction in the AFS
+    kernel module.
+\end{frame}
+
+\begin{frame}[fragile]
+  \begin{itemize}
+  \item You can only use {\tt daemon.scripts} credentials to access
+    files in a volume with volume ID equal to your UID.
+  \end{itemize}
+
+\begin{footnotesize}
+\begin{verbatim}
+int
+afs_AccessOK(struct vcache *avc, afs_int32 arights,
+             struct vrequest *areq, afs_int32 check_mode_bits)
+{
+    if (!(areq->realuid == avc->fid.Fid.Volume) &&
+        !((avc->anyAccess | arights) == avc->anyAccess) &&
+        !(((arights & ~(PRSFS_LOOKUP|PRSFS_READ)) == 0) &&
+          areq->realuid == HTTPD_UID) &&
+        !(((arights & ~(PRSFS_LOOKUP|PRSFS_READ)) == 0) &&
+          areq->realuid == POSTFIX_UID) &&
+        !(PRSFS_USR3 == afs_GetAccessBits(avc, PRSFS_USR3, areq) &&
+          areq->realuid == 0) &&
+        !(PRSFS_USR4 == afs_GetAccessBits(avc, PRSFS_USR4, areq) &&
+          (areq->realuid == 0 || areq->realuid == SIGNUP_UID)) ) {
+        return 0;
+    }
+\end{verbatim}
+\end{footnotesize}
+\end{frame}
+
