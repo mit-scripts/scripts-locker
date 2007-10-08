@@ -1,12 +1,13 @@
 \documentclass{beamer}
 
 \mode<presentation>
-{ \usetheme{boxes} }
+{ \usetheme{Copenhagen} }
 
 \usepackage{graphicx}
 
 \title{scripts.mit.edu}
-\author{Quentin Smith and Anders Kaseorg}
+\author{Quentin Smith \and Anders Kaseorg \\ \texttt{scripts@mit.edu}}
+\institute{Student Information Processing Board}
 \date{October 8, 2007}
 
 \begin{document}
@@ -17,8 +18,11 @@
 \end{frame}
 
 \include{contents}
-\include{apache}
+\include{services}
+
+\section{Backend}
+
 \include{AFS}
-\include{signup}
+\include{LVS}
 
 \end{document}
