@@ -6,17 +6,17 @@
   \begin{itemize}
       \item Everyone wants Apache
       \item Apache's default configuration isn't safe for scripting
-      \item Scripting \emph{requires} code execution - mod\_php, mod\_perl, mod\_python
+      \item Scripting \emph{requires} code execution---mod\_php, mod\_perl, mod\_python
       \item Apache normally runs everything as apache/nobody
       \item How to secure?
       \pause
-      \item suxec - allows Apache to spawn a process as the user\ldots
+      \item suEXEC---allows Apache to spawn a process as the user\ldots
       \item {\ldots}even for static content!
   \end{itemize}
 \end{frame}
 
 \begin{frame}
-  \frametitle{suexec}
+  \frametitle{suEXEC}
   \begin{itemize}
     \item setuid program
     \item Passed the request by Apache
@@ -36,7 +36,7 @@
     \item All mail is passed to procmail
   \end{itemize}
   \begin{verbatim}mailbox_command = /usr/bin/procmail -t \
--a "\${EXTENSION}" ~/mail_scripts/procmailrc\end{verbatim}
+-a "${EXTENSION}" ~/mail_scripts/procmailrc\end{verbatim}
 \end{frame}
 
 \begin{frame}[fragile]
@@ -44,7 +44,7 @@
   \begin{itemize}
     \item Reads \verb|~/mail_scripts/procmailrc| from user's home directory
     \item Users can do whatever they want with messages
-    \item AFS causes problems - No way to know if failure is temporary (file server is down) or permanent (user isn't signed up for mail scripts)
+    \item AFS causes problems---No way to know if failure is temporary (file server is down) or permanent (user isn't signed up for mail scripts)
     \item All procmail failures are treated as temporary, so mail is queued
   \end{itemize}
 \end{frame}
