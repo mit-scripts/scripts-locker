@@ -3,6 +3,14 @@
 \mode<presentation>
 { \usetheme{Copenhagen} }
 
+\AtBeginSection[]
+{
+   \begin{frame}
+       \frametitle{Outline}
+       \tableofcontents[currentsection]
+   \end{frame}
+}
+
 \usepackage{graphicx}
 
 \title{scripts.mit.edu}
@@ -27,5 +35,7 @@
 \include{kerberos}
 \include{httpdmods}
 \include{LVS}
+
+\include{closing}
 
 \end{document}
