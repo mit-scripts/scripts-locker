@@ -52,7 +52,7 @@
 \subsection{Cron (``Shortjobs'')}
 
 \begin{frame}[fragile]
-  \frametitle{Vixie Cron}
+  \frametitle{Cron (cronie)}
   \begin{itemize}
     \item Crontabs are currently stored locally on scripts servers
     \item {\tt cronload} command loads the crontabs from
@@ -73,4 +73,17 @@
 \item SQL data is stored locally, replicated across multiple servers
 \item Nightly backups go into AFS
 \end{itemize}
+\end{frame}
+
+\subsection{Version control}
+
+\begin{frame}
+  \frametitle{SVN and Git hosting}
+  \begin{itemize}
+    \item New service (September 2008), not well documented
+    \item svn://\textit{username}.scripts.mit.edu/ and git://\textit{username}.scripts.mit.edu/
+    \item Uses suEXEC to run a svnserve / git-daemon as the user
+    \item /mit/\textit{username}/Scripts/\{svn,git\}
+    \item git:// is read-only, so future plans for svn+ssh:// and git+ssh://
+  \end{itemize}
 \end{frame}
