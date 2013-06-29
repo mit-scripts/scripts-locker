@@ -35,6 +35,26 @@ EOF
 close FASTCGI;
 chmod 0755, "index.fcgi";
 
+open README, ">README.txt";
+print README <<EOF;
+This directory contains index.fcgi, a script that serves up your Django site.
+
+To modify your Django project access the files in
+	/mit/$user/Scripts/django/$name
+
+Files placed in this directory will be served directly to users without
+being processed by Django.
+
+Static files live in the "static" subdirectory; you should not add things
+there directly but instead place them with the relevant application as you
+normally would, then run "python manage.py collectstatic" from the above
+directory; see <https://docs.djangoproject.com/en/1.5/howto/static-files/>.
+
+  -- Scripts Team 2013-06-28
+EOF
+close README;
+chmod 0555, "README.txt";
+
 open HTACCESS, ">.htaccess";
 print HTACCESS <<EOF;
 RewriteEngine On
@@ -72,8 +92,10 @@ while (<SETTINGS>) {
       next;
   } elsif (/Chicago/) {
     $_ =~ s/Chicago/New_York/;
-  } elsif (/^ADMIN_MEDIA_PREFIX/) {
-    $_ = "ADMIN_MEDIA_PREFIX = '/__scripts/django/media/'";
+  } elsif (/^STATIC_URL/) {
+    $_ = "STATIC_URL = '//$USER.$server/$name/static/'";
+  } elsif (/^STATIC_ROOT/) {
+    $_ = "STATIC_ROOT = '/mit/$USER/web_scripts/$addrend/static/'";
   } elsif (/^INSTALLED_APPS/) {
     print NEWSETTINGS "$_\n";
     while (<SETTINGS>) {
@@ -98,7 +120,7 @@ while (<URLS>) {
     $_ =~ s/^# *//;
   } elsif (/^#.*admin.autodiscover/) {
     $_ =~ s/^# *//;
-  } elsif (/^ *# *\(r\'\^admin\//) {
+  } elsif (/^ *# url\(r\'\^admin\//) {
     $_ =~ s/# *//;
   }
   print NEWURLS "$_\n";
@@ -108,6 +130,8 @@ close URLS;
 rename "urls.py.new", "urls.py";
 
 chdir "..";
+
+system(qw{python manage.py collectstatic --noinput}) == 0 or die "\nFailed to collect static files.\n\n";
 
 print "Initializing your project's SQL database schema...\n";
 system qw{./manage.py syncdb --noinput};
