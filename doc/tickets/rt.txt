@@ -14,14 +14,14 @@ scripts@mit.edu.
 Another useful option here is to set an RT password for your account,
 so you don't need certs to log in (though it sometimes will keep
 asking you for your password on each page load if you don't have
-certs) and so you can use the BarnOwl RT module or the zephyrbot).
+certs) and so you can use the BarnOwl RT module or the zephyrbot.
 The BarnOwl RT module is the preferred option.  To install it, run
 
     mkdir -p ~/.owl/modules
     cd ~/.owl/modules
     ln -s /mit/snippets/rt/BarnOwl RT
 
-Then in BarnOwl run ":reload-module RT".  The RT module addes the :rt
+Then in BarnOwl run ":reload-module RT".  The RT module adds the :rt
 command to barnowl. Run ":rt help" for more information; useful
 shortcuts are ":rt r" to set the status to resolved and ":rt d" to set
 the status to deleted.  The zephyrbot will take commands to -c scripts
