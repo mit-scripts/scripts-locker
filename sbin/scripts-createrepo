@@ -5,12 +5,14 @@
 
 set -eux
 
+server="${1-scripts.mit.edu}"
+
 ssh='ssh -o GSSAPIAuthentication=yes -o GSSAPIDelegateCredentials=no'
 
-yum=/afs/athena.mit.edu/contrib/scripts/yum-repos/rpm-fc$($ssh root@scripts.mit.edu 'lsb_release -rs')
+yum=/afs/athena.mit.edu/contrib/scripts/yum-repos/rpm-fc$($ssh "root@$server" 'lsb_release -rs')
 [ -d "$yum" ]
 
-tmp=$($ssh root@scripts.mit.edu "\
+tmp=$($ssh "root@$server" "\
 set -eux
 tmp=\$(mktemp -dt createrepo.XXXXXX)
 createrepo -d -o \"\$tmp\" -- '$yum' >&2
@@ -19,11 +21,11 @@ printf '%s' \"\$tmp\"
 [ "$tmp" ]
 
 new=$(mktemp -d -- "$yum/repodata.XXXXXX")
-rsync -avz -e "$ssh" -- "root@scripts.mit.edu:$tmp/repodata/" "$new"
+rsync -avz -e "$ssh" -- "root@$server:$tmp/repodata/" "$new"
 mv -b -T -- "$new" "$yum/repodata"
 rm -rf -- "$yum/repodata~"
 
-$ssh root@scripts.mit.edu "\
+$ssh "root@$server" "\
 set -eux
 rm -rf -- '$tmp'
 "
