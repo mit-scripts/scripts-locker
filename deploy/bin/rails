@@ -154,7 +154,7 @@ untie @railsfcgi;
 open RAILSFCGI, ">>public/dispatch.fcgi";
 print RAILSFCGI "#!/usr/bin/ruby\n";
 print RAILSFCGI <<EOF;
-require File.join(File.dirname(__FILE__), '../config/environment')       
+require File.join(File.expand_path(File.dirname(__FILE__)), '../config/environment')       
 require 'rack'
 
 ## Added by scripts.mit.edu autoinstaller to reload when app code changes
