@@ -1,11 +1,12 @@
 #!/bin/bash
-set -e
+set -eu
 
 err() {
+    ok=
     echo "$@"
 }
 
-if [ -z "$1" ]; then
+if [ $# -eq 0 ]; then
     filter="objectClass=posixAccount"
 else
     filter=
@@ -17,12 +18,13 @@ fi
 
 unset "${!l_@}"
 while read attr value; do
+    ok=t
     if [ -n "$attr" ]; then
 	declare "l_${attr%:}=$value"
 	continue
     fi
 
-    read f_type f_data < <(hesinfo "$l_uid" filsys) || :
+    read f_type f_data < <(hesinfo -- "$l_uid" filsys | sort -nk5,5) || :
     if [ -z "$f_type" ]; then
 	err "$l_uid" "no_hesiod"
     elif [ "$f_type" = "ERR" ]; then
@@ -30,44 +32,74 @@ while read attr value; do
     elif [ "$f_type" = "AFS" ]; then
 	read f_path f_perm f_link z \
 	    < <(echo "$f_data")
-	[ "$l_homeDirectory" = "$f_path" ] || \
-	    err "$l_uid" "hesiod_path $f_path"
+	[ "${l_homeDirectory#/disabled}" = "$f_path" ] || \
+	    err "$l_uid" "hesiod_path $f_path (LDAP $l_homeDirectory)"
     else
 	err "$l_uid" "wrong_hesiod $f_type"
     fi
 
-    IFS=/ read p_empty p_top p_cell p \
-	< <(echo "$l_homeDirectory")
-    [ -z "${p_empty}" ] || \
-	err "$l_uid" "relative_home $l_homeDirectory"
-    [ "${p_top}" = "afs" ] || \
-	err "$l_uid" "not_afs $l_homeDirectory"
+    p_cell=
+    case "$l_homeDirectory" in
+	/afs/*)
+	    p_cell="${l_homeDirectory#/afs/}"
+	    p_cell="${p_cell%%/*}"
+	    ;;
+	/disabled/afs/*)
+	    err "$l_uid" "disabled $l_homeDirectory"
+	    l_homeDirectory="${l_homeDirectory#/disabled}"
+	    p_cell="${l_homeDirectory#/afs/}"
+	    p_cell="${p_cell%%/*}"
+	    ;;
+	/*)
+	    err "$l_uid" "not_afs $l_homeDirectory"
+	    ;;
+	*)
+	    err "$l_uid" "relative_home $l_homeDirectory"
+	    ;;
+    esac
 
     read v_vname v_vol v \
-	< <(vos exa -noauth "$l_uidNumber" -cell "$p_cell" 2>/dev/null) || :
+	< <(vos examine -noauth -id "$l_uidNumber" -cell "${p_cell#.}" 2>/dev/null) || :
     [ "$v_vol" = "$l_uidNumber" ] ||
-	err "$l_uid" "no_vol $l_uidNumber"
+	err "$l_uid" "no_vol ${p_cell#.} $l_uidNumber"
 
     if ! [ -d "$l_homeDirectory" ]; then
 	if ! [ -e "$l_homeDirectory" ]; then
-	    err "$l_uid" "deleted $l_homeDirectory"
+	    err "$l_uid" "no_home $l_homeDirectory"
 	else
 	    err "$l_uid" "not_dir $l_homeDirectory"
 	fi
     else
 	read c c_path c c c c_cell \
-	    < <(fs whichcell "$l_homeDirectory" 2>/dev/null) || :
+	    < <(fs whichcell -path "$l_homeDirectory" 2>/dev/null) || :
 	[ "$c_path" = "$l_homeDirectory" ] || \
 	    err "$l_uid" "no_cell $l_homeDirectory"
-	[ "$c_cell" = "'$p_cell'" ] || \
-	    err "$l_uid" "wrong_cell $l_homeDirectory"
+	[ "$c_cell" = "'${p_cell#.}'" ] || \
+	    err "$l_uid" "wrong_cell $p_cell $l_homeDirectory $c_cell"
 
 	read m_path m m m m m m m_vname \
-	    < <(fs lsmount "$l_homeDirectory" 2>/dev/null) || :
+	    < <(fs lsmount -dir "$l_homeDirectory" 2>/dev/null) || :
 	[ "$m_path" = "'$l_homeDirectory'" ] || \
 	    err "$l_uid" "no_mount $l_homeDirectory"
-	[ "$m_vname" = "'#$v_vname'" ] || [ "$m_vname" = "'%$v_vname'" ] || \
-	    err "$l_uid" "wrong_mount $m_vname ($l_uidNumber = $v_vname)"
+
+	case "$m_vname" in
+	    "'#$v_vname'" | "'%$v_vname'" | "'#${p_cell#.}:$v_vname'" | "'%{p_cell#.}:$v_vname'")
+		;;
+	    *)
+		m_vname2="${m_vname#\'[#%]}"
+		m_vname2="${m_vname2%\'}"
+		m_cell="${m_vname2%%:*}"
+		[ "$m_cell" != "$m_vname2" ] || m_cell="${p_cell#.}"
+		m_vname2="${m_vname2#*:}"
+		read m_vname2 m_vol m \
+		    < <(vos examine -noauth -id "$m_vname2" -cell "$m_cell" 2>/dev/null) || :
+		err "$l_uid" "wrong_mount ${m_cell} $m_vname = $m_vol (${p_cell#.} $l_uidNumber = $v_vname)"
+		;;
+	esac
+    fi
+
+    if [ "$ok" = t ]; then
+	err "$l_uid" "ok"
     fi
 
     unset "${!l_@}"
