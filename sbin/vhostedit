@@ -6,4 +6,4 @@ if [ ! "$1" ]; then
 fi
 
 exec ldapvi --bind sasl -Y GSSAPI -h scripts5.mit.edu -b dc=scripts,dc=mit,dc=edu \
-       "(|(&(objectClass=apacheConfig)(|$(printf '(apacheServerName=%s)' "$@")$(printf '(apacheServerAlias=%s)' "$@")))(&(objectClass=scriptsVhost)(|$(printf '(scriptsVhostName=%s)' "$@")$(printf '(scriptsVhostAlias=%s)' "$@"))))"
+       "(&(objectClass=scriptsVhost)(|$(printf '(scriptsVhostName=%s)' "$@")$(printf '(scriptsVhostAlias=%s)' "$@")))"

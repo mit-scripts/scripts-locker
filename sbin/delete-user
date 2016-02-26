@@ -36,17 +36,6 @@ def findGroup(l, username):
 
     return group_record
 
-def findApacheConfig(l, uid):
-    host_records = ll.search_s(
-        "ou=VirtualHosts,dc=scripts,dc=mit,dc=edu",
-        ldap.SCOPE_SUBTREE,
-        ldap.filter.filter_format(
-            "(&(objectClass=apacheConfig)" +
-            "(apacheSuexecUid=%s))",
-            [uid]))
-
-    return host_records
-
 def findVhost(l, full_name):
     host_records = ll.search_s(
         "ou=VirtualHosts,dc=scripts,dc=mit,dc=edu",
@@ -72,18 +61,12 @@ if __name__ == '__main__':
     print "Finding group '%s'..." % (user,)
     group_record = findGroup(ll, user)
 
-    print "Searching for apache configurations..."
-    apache_configs = findApacheConfig(ll, user_record[1]['uidNumber'][0])
-
     print "Searching for vhost configurations..."
     vhost_configs = findVhost(ll, user_record[0])
 
     print "Deleting..."
     delete_record(ll, user_record[0])
     delete_record(ll, group_record[0])
-
-    for config in apache_configs:
-        delete_record(ll, config[0])
 
     for vhost in vhost_configs:
         delete_record(ll, vhost[0])
