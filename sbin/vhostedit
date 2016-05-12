@@ -5,5 +5,5 @@ if [ ! "$1" ]; then
     exit 2
 fi
 
-exec ldapvi --bind sasl -Y GSSAPI -h scripts5.mit.edu -b dc=scripts,dc=mit,dc=edu \
+exec ldapvi --bind sasl -Y GSSAPI -h scripts-ldap-1.mit.edu -b dc=scripts,dc=mit,dc=edu \
        "(&(objectClass=scriptsVhost)(|$(printf '(scriptsVhostName=%s)' "$@")$(printf '(scriptsVhostAlias=%s)' "$@")))"
