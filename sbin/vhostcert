@@ -60,7 +60,7 @@ def __main__():
     elif sys.argv[1:] == ['export']:
         print(scripts_to_pem(sys.stdin.read().encode()).decode(), end='')
     else:
-        print('usage: {} {import|export}'.format(__file__), file=sys.stderr)
+        print('usage: {} {{import|export}}'.format(__file__), file=sys.stderr)
 
 if __name__ == '__main__':
     sys.exit(__main__())
