@@ -7,6 +7,21 @@ import re
 import sys
 from OpenSSL import crypto
 
+# How to use:
+# 1. Download the "X509, Base64 encoded" cert from the Certificate
+#    Services Manager
+# 2. Run "vhostcert import < foo_mit_edu.cer". Save stdout (a base64
+#    blob)
+# 3. Log in as root to a Scripts server, and run vhostedit foo.mit.edu
+# 4. Add entries:
+#       scriptsVhostCertificate: space-separated base64 blobs from vhostcert import
+#       scriptsVhostCertificateKeyFile: scripts-2048.key
+# 5. On each server:
+#       /etc/httpd/export-scripts-certs
+#       systemctl reload httpd.service
+#
+# TODO: Make this script do the vhostedit automatically.
+
 def debug_chain(chain):
     for i, c in enumerate(chain):
         print(i, 's:', c.get_subject(), file=sys.stderr)
