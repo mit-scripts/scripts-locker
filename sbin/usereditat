@@ -1,0 +1,9 @@
+#!/bin/sh
+
+if [ ! "$2" ]; then
+    echo "Usage: $0 <server> <user>"
+    exit 2
+fi
+
+exec ldapvi --bind sasl -Y GSSAPI -h $1 -b dc=scripts,dc=mit,dc=edu \
+       "(&(|(objectClass=posixAccount)(objectClass=posixGroup))(cn=$2))"
