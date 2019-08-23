@@ -152,7 +152,7 @@ fs sa "$lroot/.sql" system:anyuser none
 fs sa "$lroot/.sql" system:authuser none
 
 if [ "$requires_sql" -eq 1 ]; then
-  sqlinfo=`sshrun "/mit/scripts/sql/bin$scriptsdev/get-password"`
+  sqlinfo="$(/mit/scripts/sql/bin/get-password "$lname")"
   if [ "$sqlinfo" = "" ]; then
       echo 
       echo "You already have a MySQL account but you do not have a .my.cnf file."

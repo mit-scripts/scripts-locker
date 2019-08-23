@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 checkfailed() {
   if [ -f "$lroot/web_scripts/$addrend/.failed" ]; then
@@ -77,17 +77,8 @@ if [ "$requires_sql" = "" ]; then
   requires_sql=1
 fi
 
-if [ ! -f "$lroot/.my.cnf" ]; then
-  mkdir -p $lroot/.sql
-  fs sa $lroot/.sql system:anyuser none
-  fs sa $lroot/.sql system:authuser none
-  fs sa $lroot/.sql daemon.scripts write
-  fs sa $lroot/.sql daemon.sql write
-  ln -nfs .sql/my.cnf $lroot/.my.cnf
-fi
-
 if [ "$requires_sql" -eq 1 ]; then
-  sqlinfo=`sshrun "sql/bin$scriptsdev/get-password"`
+  sqlinfo=$(/mit/scripts/sql/bin/get-password "$lname")
   if [ "$sqlinfo" = "" ]; then
       echo 
       echo You already have a MySQL account but you do not have a .my.cnf file.
