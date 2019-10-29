@@ -49,12 +49,12 @@
      \ldots
 +
 +    if (is_static_extension(cmd)) \{
-+        if (setenv(``PATH_TRANSLATED'', cmd, 1) != 0) \{
-+            log_err(``setenv failed\n'');
++        if (setenv("PATH_TRANSLATED", cmd, 1) != 0) \{
++            log_err("setenv failed\\n");
 +            exit(255);
 +        \}
 +        execl(STATIC_CAT_PATH, STATIC_CAT_PATH, (const char *)NULL);
-+        log_err("(%d)%s: static-cat exec failed (%s)\n", errno,
++        log_err("(%d)%s: static-cat exec failed (%s)\\n", errno,
 +                strerror(errno), STATIC_CAT_PATH);
 +        exit(255);
 +    \}
