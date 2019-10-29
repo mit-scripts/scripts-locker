@@ -27,10 +27,8 @@
               const char *luser)
  \{
      \ldots
-+    if ((pid = fork()) == -1) \{
-+       free(princname);
-+       return(FALSE);
-+    \}
++    if ((pid = fork()) == -1)
++       goto cleanup;
 +    if (pid == 0) \{
 +#define ADMOF_PATH "/usr/local/sbin/ssh-admof"
 +        exec(ADMOF_PATH, ADMOF_PATH, (char *) luser, princname, NULL);
@@ -38,7 +36,7 @@
 +    \}
 +    if (waitpid(pid, &status, 0) > 0 && WIFEXITED(status) &&
 +        WEXITSTATUS(status) == 33) \{
-+        isok = TRUE;
++        result = ACCEPT;
 +    \}
      \ldots
  \}

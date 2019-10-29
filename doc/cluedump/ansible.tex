@@ -1,0 +1,30 @@
+\subsection{Ansible}
+
+\begin{frame}
+  \frametitle{Configuration Management}
+  \begin{itemize}
+  \item Ansible is a tool for declarative configuration management
+  \item We can install LVS, syslog, and real servers using Ansible
+  \item Server configuration is modular, so each feature can be separately developed
+  \item Hopefully will make future version upgrades easier
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Example Role - real-fuse}
+\begin{verbatim}
+- name: Install fuse.conf
+  copy:
+    dest: /etc/fuse.conf
+    content: |
+      user_allow_other
+- name: Load fuse kernel module
+  copy:
+    dest: /etc/modules-load.d/fuse.conf
+    content: |
+      fuse
+  notify: load modules
+- name: Immediately load new modules
+  meta: flush_handlers
+\end{verbatim}
+\end{frame}

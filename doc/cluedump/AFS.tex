@@ -35,9 +35,9 @@
   \only<3>{or the {\tt apache} or {\tt postfix} users are doing a {\tt
       stat()},\vspace{\baselineskip}}%
   \only<4>{or the {\tt apache} user is trying to read a file with mode
-    {\tt 777},\vspace{\baselineskip}}%
+    {\tt 777} or named ``.ht*'',\vspace{\baselineskip}}%
   \only<5>{or the {\tt root} or {\tt signup} users are accessing file
-    with the special {\tt D} or {\tt E} bits.}%
+    with the special {\tt C}, {\tt D}, or {\tt E} bits.}%
 
 \begin{footnotesize}
 \begin{semiverbatim}
@@ -51,7 +51,8 @@
 +        \alert<3>{!(arights == PRSFS_LOOKUP && areq->realuid == HTTPD_UID) &&}
 +        \alert<3>{!(arights == PRSFS_LOOKUP && areq->realuid == POSTFIX_UID)} &&
 +        \alert<4>{!(arights == PRSFS_READ && areq->realuid == HTTPD_UID &&}
-+        \alert<4>{  avc->m.Mode == 0100777)} &&
++        \alert<4>{  avc->m.Mode == 0100777 || avc->apache_access)} &&
++        \alert<5>{!(PRSFS_USR2 == afs_GetAccessBits(avc, PRSFS_USR2, areq)) &&}
 +        \alert<5>{!(PRSFS_USR3 == afs_GetAccessBits(avc, PRSFS_USR3, areq) &&}
 +        \alert<5>{  areq->realuid == 0) &&}
 +        \alert<5>{!(PRSFS_USR4 == afs_GetAccessBits(avc, PRSFS_USR4, areq) &&}

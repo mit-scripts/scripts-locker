@@ -6,7 +6,7 @@
   \begin{itemize}
       \item Everyone wants Apache
       \item Apache's default configuration isn't safe for scripting
-      \item Scripting \emph{requires} code execution---mod\_php, mod\_perl, mod\_python
+      \item Scripting \emph{requires} code execution---mod\_php, mod\_perl, mod\_python, mod\_wsgi
       \item Apache normally runs everything as apache/nobody
       \item How to secure?
       \pause
@@ -35,7 +35,7 @@
     \item No local mailboxes
     \item All mail is passed to procmail
   \end{itemize}
-  \begin{verbatim}mailbox_command = /usr/bin/procmail -t \
+  \begin{verbatim}  mailbox_command = /usr/bin/procmail -t -p \
 -a "${EXTENSION}" ~/mail_scripts/procmailrc\end{verbatim}
 \end{frame}
 
@@ -59,7 +59,6 @@
       \verb|~/cron_scripts/crontab| \pause
     \item Needs improvement
     \item Cron does not fail over with Web and Mail
-    \item Plan to move crontabs into AFS and do hot failover
   \end{itemize}
 \end{frame}
 
@@ -80,7 +79,7 @@
 \begin{frame}
   \frametitle{SVN and Git hosting}
   \begin{itemize}
-    \item New service (September 2008), not well documented
+    \item Not well documented
     \item svn://\textit{username}.scripts.mit.edu/ and git://\textit{username}.scripts.mit.edu/
     \item Uses suEXEC to run a svnserve / git-daemon as the user
     \item /mit/\textit{username}/Scripts/\{svn,git\}

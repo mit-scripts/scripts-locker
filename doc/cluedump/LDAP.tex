@@ -1,17 +1,23 @@
 \subsection{LDAP}
 
 \begin{frame}
-  \frametitle{LDAP data}
+  \frametitle{LDAP architecture}
 
   \begin{itemize}
   \item All user-specific information is stored in LDAP records
-  \item Each scripts server runs a local LDAP daemon with multi-master
-    replication
-  \item Each user has a \texttt{posixAccount} and at least one
-    \texttt{apacheConfig} and \texttt{scriptsVhost}
-  \item Users can request additional virtual hosts
-  \item We hope to create a web interface (phase 1 of
-    ``scripts-pony'') for users to create virtual hosts in the
-    \texttt{*.user.scripts.mit.edu} namespace
+  \item \texttt{scripts-ldap-1} through \texttt{scripts-ldap-3} run LDAP daemons with multi-master replication
+  \item Each realserver runs a read-only local caching LDAP daemon
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{LDAP data}
+
+  \begin{itemize}
+  \item Each user has a \texttt{scriptsAccount} and at least one
+    \texttt{scriptsVhost}
+  \item Users can request additional virtual hosts using ``pony''
+  \item scriptsAccount is consulted by Postfix for mail routing (so accounts can be blocked)
+  \item scriptsVhost is consulted by a cron job for SSL certificates
   \end{itemize}
 \end{frame}
