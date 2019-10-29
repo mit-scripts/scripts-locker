@@ -16,11 +16,11 @@
   \end{enumerate}
 \begin{footnotesize}
 \begin{semiverbatim}
-<FilesMatch ``(?i)\.(cgi|exe|php|pl|py|scm)$''>
+<FilesMatch ``(?i)\\.(cgi|exe|php|pl|py|scm)$''>
         SetHandler cgi-script
         Options +ExecCGI
 </FilesMatch>
-<FilesMatch ``(?i)\.(avi|css|doc|docm|docx|\ldots|zip)$''>
+<FilesMatch ``(?i)\\.(avi|css|doc|docm|docx|\ldots|zip)$''>
         SetHandler cgi-script
         Options +ExecCGI
 </FilesMatch>
@@ -45,8 +45,7 @@
 +\}
 +
  int main(int argc, char *argv[])
- \{
-     \ldots
+ \{ \ldots
 +
 +    if (is_static_extension(cmd)) \{
 +        if (setenv("PATH_TRANSLATED", cmd, 1) != 0) \{
@@ -61,3 +60,10 @@
 \end{semiverbatim}
 \end{footnotesize}
 \end{frame}
+
+{
+  \usebackgroundtemplate{\includegraphics[keepaspectratio=true,height=\paperheight,width=\paperwidth]{static-cat.jpg}}
+  \setbeamertemplate{navigation symbols}{}
+  \begin{frame}[plain]
+  \end{frame}
+}

@@ -16,8 +16,7 @@
     \item Works around bugs in scripts that assume a single web server
   \end{itemize}
   \begin{center}
-    \only<1>{\includegraphics[width=3in] {Aggregated-cps_www-year.png}}
-    \only<2>{\includegraphics[width=3in] {Aggregated-cps_www-year-clip.png}}
+    \includegraphics[width=3in] {lvs.png}
   \end{center}
 \end{frame}
 
@@ -27,6 +26,7 @@
   \item \url{http://scripts.mit.edu:78/} shows the current load
   \item Or you can \texttt{finger @scripts.mit.edu} for more detail
   \end{itemize}
+  \begin{tiny}
 \begin{verbatim}
 $ finger @scripts
 [scripts.mit.edu]
@@ -48,4 +48,5 @@ FWM  3 wlc persistent 600
   -> BUSY-BEAVER.MIT.EDU:25       Route   4096   0          1
   -> PANCAKE-BUNNY.MIT.EDU:25     Route   4096   0          2
 \end{verbatim}
+  \end{tiny}
 \end{frame}
