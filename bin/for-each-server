@@ -1,5 +1,5 @@
 #!/bin/sh
 
-for server in $(finger @scripts-director.mit.edu | sed -n '/^FWM  2 /, /^[^ ]/ s/^  -> \([^:]*\):.*/\1/p'); do
+for server in $(finger @scripts-director.mit.edu | sed -n '/^FWM  22 /, /^[^ ]/ s/^  -> \([^:]*\):.*/\1/p'); do
     ssh "$server" "$@"
 done
