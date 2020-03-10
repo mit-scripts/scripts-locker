@@ -10,7 +10,19 @@ cd /mit/scripts/cron_scripts/rpm-sync/
 echo "Cleaning up environment..."
 rm -rf ./*.rpmlist ./*.diff rpmlist.master missing.rpms
 
-servers=$(finger @scripts-director.mit.edu | sed -n '/^FWM  2 /, /^[^ ]/ s/^  -> \([^:]*\):.*/\1/p')
+case $(lsb_release -rs) in
+    20)
+        fwm=22
+        ;;
+    30)
+        fwm=32
+        ;;
+    *)
+        echo "Unknown FWM"
+        exit 1
+        ;;
+esac
+servers=$(finger @scripts-director.mit.edu | sed -n '/^FWM  '$fwm' /, /^[^ ]/ s/^  -> \([^:]*\):.*/\1/p')
 
 for server in $servers; do
     echo "Connecting to $server..."
