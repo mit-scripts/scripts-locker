@@ -219,9 +219,9 @@ fi
 
 if [ "$wizard" != "" ]; then
   if [ "$create_scripts_dir" -eq 1 ]; then
-    vsshrun "/mit/$ailocker/wizard/bin/wizard" "install" "--web-stub-path" "$lroot/web_scripts/$addrend" "$@" "$wizard" "$lroot/Scripts/$deploy/$addrend"
+    vsshrun -t "/mit/$ailocker/wizard/bin/wizard" "install" "--web-stub-path" "$lroot/web_scripts/$addrend" "$@" "$wizard" "$lroot/Scripts/$deploy/$addrend"
   else
-    vsshrun "/mit/$ailocker/wizard/bin/wizard" "install" "$@" "$wizard" "$lroot/web_scripts/$addrend"
+    vsshrun -t "/mit/$ailocker/wizard/bin/wizard" "install" "$@" "$wizard" "$lroot/web_scripts/$addrend"
   fi
   exit 0
 fi
@@ -253,7 +253,7 @@ fi
 
 if [ "$prompt_password" -eq 1 ]; then
     stty -echo
-    sshrun "/mit/$ailocker/deploy$scriptsdev/bin/prompt-password" "$sname" "$deploy" "$addrend" "$admin_username"
+    sshrun -t "/mit/$ailocker/deploy$scriptsdev/bin/prompt-password" "$sname" "$deploy" "$addrend" "$admin_username"
     stty echo
 fi
 
@@ -276,7 +276,7 @@ if [ -f "/mit/$ailocker/deploy$scriptsdev/php.ini/$deploy" ]; then
 fi
 cd "$origdir"
 
-vsshrun "/mit/$ailocker/deploy$scriptsdev/bin/$deploy" "$sname" "$deploy" "$addrend" "$admin_username" "$requires_sql" "$scriptsdev" "${ATHENA_USER:-$USER}" || die "Unknown failure during configuration"
+vsshrun -t "/mit/$ailocker/deploy$scriptsdev/bin/$deploy" "$sname" "$deploy" "$addrend" "$admin_username" "$requires_sql" "$scriptsdev" "${ATHENA_USER:-$USER}" || die "Unknown failure during configuration"
 rm -f "$lroot/web_scripts/$addrend/.scripts-tmp"
 checkfailed
 
