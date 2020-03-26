@@ -3,6 +3,12 @@
 lname=$1
 shift
 
+extra=
+if [ "$1" = "-t" ]; then
+    extra=-t
+    shift
+fi
+
 exec ssh \
 	-o GSSAPIAuthentication=yes \
 	-o GSSAPIDelegateCredentials=no \
@@ -10,6 +16,7 @@ exec ssh \
 	-o ForwardX11=no \
 	-o GlobalKnownHostsFile=/afs/athena.mit.edu/contrib/scripts/etc/known_hosts \
 	-o UserKnownHostsFile=/dev/null \
+	$extra \
 	scripts.mit.edu -l "$lname" "$(printf "''%q " "$@")"
 
 # ssh gets quoting wrong, so we do it ourself with printf "%q ".
