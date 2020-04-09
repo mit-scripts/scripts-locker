@@ -64,8 +64,7 @@ while (<SETTINGS>) {
     $_ = "        'ENGINE': 'django.db.backends.mysql',";
   } elsif  (/'NAME'/) {
     $_ = "        'NAME': '$sqldb',";
-  } elsif (/'USER'/) {
-    $_ = "        'OPTIONS': {\n            'read_default_file' : os.path.expanduser('~/.my.cnf'),\n        },";
+    print NEWSETTINGS "        'OPTIONS': {\n            'read_default_file' : os.path.expanduser('~/.my.cnf'),\n        },";
   } elsif (/'PASSWORD'/) {
       next;
   } elsif (/'HOST'/) {
@@ -74,20 +73,15 @@ while (<SETTINGS>) {
     $_ =~ s/Chicago/New_York/;
   } elsif (/^ADMIN_MEDIA_PREFIX/) {
     $_ = "ADMIN_MEDIA_PREFIX = '/__scripts/django/media/'";
+  } elsif (/^STATIC_URL/) {
+    $_ = "STATIC_URL = '/__scripts/django/media'";
   } elsif (/^INSTALLED_APPS/) {
-    print NEWSETTINGS "$_\n";
-    while (<SETTINGS>) {
-      if (/^\)/) {
-        print NEWSETTINGS "    'django.contrib.admin',\n";
-        print NEWSETTINGS "    'django.contrib.admindocs',\n";
-      }
-      print NEWSETTINGS $_;
-    }
+    $_ = "INSTALLED_APPS = (\n    'django.contrib.admindocs',";
   }
   print NEWSETTINGS "$_\n";
 }
 close NEWSETTINGS;
-close SETTNGS;
+close SETTINGS;
 rename "settings.py.new", "settings.py";
 
 open URLS, "urls.py";
@@ -110,6 +104,7 @@ rename "urls.py.new", "urls.py";
 chdir "..";
 
 print "Initializing your project's SQL database schema...\n";
+chmod 0755, "manage.py";
 system qw{./manage.py syncdb --noinput};
 print "...done\n";
 
