@@ -155,8 +155,11 @@ print "Setting your superuser password... ";
 open my $chpasswd, "|-", qw{setsid ./manage.py changepassword}, $admin_username or die "Failed to set password: $!";
 print $chpasswd "$admin_password\n";
 print $chpasswd "$admin_password\n";
-close $chpasswd or die "Failed to set password: $!";
-wait;
+unless (close $chpasswd) {
+  # Probably not complicated enough.
+  print "Failed to set password. Please enter a new password:\n";
+  system qw{./manage.py changepassword}, $admin_username;
+}
 print "done\n";
 
 print "\nDjango has been installed. The setup is roughly what's described\n";
