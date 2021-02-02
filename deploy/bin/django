@@ -96,7 +96,7 @@ EOF
 # Django requires a list of hosts this site is served from; since users can
 # add new hosts with Pony at any time, we just trust SERVER_NAME (set by
 # Apache) to be the correct hostname. If you want to restrict which virtual
-# hosts your application, can run on, disable this middleware and set
+# hosts your application can run on, disable this middleware and set
 # ALLOWED_HOSTS by hand.
 class AllowedHostsMiddleware:
     def __init__(self, get_response=None):
