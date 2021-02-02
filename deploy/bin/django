@@ -158,7 +158,9 @@ print $chpasswd "$admin_password\n";
 unless (close $chpasswd) {
   # Probably not complicated enough.
   print "Failed to set password. Please enter a new password:\n";
-  system qw{./manage.py changepassword}, $admin_username;
+  while (system(qw{./manage.py changepassword}, $admin_username)) {
+    # Nothing
+  }
 }
 print "done\n";
 
