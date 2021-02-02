@@ -29,8 +29,9 @@ t = threading.Thread(target=reloader_thread)
 t.daemon = True
 t.start()
 
-from django.core.servers.fastcgi import runfastcgi
-runfastcgi(method="threaded", daemonize="false")
+from flup.server.fcgi import WSGIServer
+from $name.wsgi import application
+WSGIServer(application).run()
 EOF
 close FASTCGI;
 chmod 0755, "index.fcgi";
@@ -49,7 +50,13 @@ close HTACCESS;
 chmod 0777, ".htaccess";
 
 chdir "/mit/$USER/Scripts/django/";
-system(qw{django-admin startproject}, $name)==0 or die "\nFailed to create app.\n\n";
+
+my @djangoadmin = qw{python -m django};
+if (system("@djangoadmin version &>/dev/null")) {
+  @djangoadmin = ("django-admin");
+}
+
+system(@djangoadmin, "startproject", $name)==0 or die "\nFailed to create app.\n\n";
 chdir "$name/$name";
 
 open SETTINGS, "settings.py";
@@ -77,6 +84,19 @@ while (<SETTINGS>) {
     $_ = "STATIC_URL = '/__scripts/django/media/'";
   } elsif (/^INSTALLED_APPS/) {
     $_ .= "\n    'django.contrib.admindocs',";
+  } elsif (/^MIDDLEWARE/) {
+    print NEWSETTINGS <<EOF;
+class AllowedHostsMiddleware:
+    def __init__(self, get_response):
+        self.get_response = get_response
+    def __call__(self, request):
+        global ALLOWED_HOSTS
+        name = request.META.get('SERVER_NAME')
+        if name and name not in ALLOWED_HOSTS:
+            ALLOWED_HOSTS.append(name)
+        return self.get_response(request)
+EOF
+    $_ .= "\n    '$name.settings.AllowedHostsMiddleware',";
   }
   print NEWSETTINGS "$_\n";
 }
@@ -105,7 +125,10 @@ chdir "..";
 
 print "Initializing your project's SQL database schema...\n";
 chmod 0755, "manage.py";
-system qw{./manage.py syncdb --noinput};
+# Django 1.6 has syncdb, Django 1.11 has migrate.
+# Run migrate if syncdb returns an error.
+system qw{./manage.py syncdb --noinput}
+  and system qw{./manage.py migrate --noinput};
 print "...done\n";
 
 print "Creating your superuser account... ";
