@@ -86,9 +86,9 @@ EOF
   } elsif (/Chicago/) {
     $_ =~ s/Chicago/New_York/;
   } elsif (/^ADMIN_MEDIA_PREFIX/) {
-    $_ = "ADMIN_MEDIA_PREFIX = '/__scripts/django/media/'";
+    $_ = "ADMIN_MEDIA_PREFIX = '/__scripts/django/static/'";
   } elsif (/^STATIC_URL/) {
-    $_ = "STATIC_URL = '/__scripts/django/media/'";
+    $_ = "STATIC_URL = '/__scripts/django/static/'";
   } elsif (/^INSTALLED_APPS/) {
     $_ .= "\n    'django.contrib.admindocs',";
   } elsif (/^MIDDLEWARE/) {
