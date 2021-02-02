@@ -61,6 +61,7 @@ chdir "$name/$name";
 
 open SETTINGS, "settings.py";
 open NEWSETTINGS, ">settings.py.new";
+my $dbname = 0;
 while (<SETTINGS>) {
   chomp;
   if (/Your Name/) {
@@ -69,7 +70,7 @@ while (<SETTINGS>) {
       $_ =~ s/DEBUG/import os\n\nDEBUG/;
   } elsif (/'ENGINE'/) {
     $_ = "        'ENGINE': 'django.db.backends.mysql',";
-  } elsif  (/'NAME'/) {
+  } elsif  (/'NAME'/ && !$dbname) {
     $_ = "        'NAME': '$sqldb',";
     print NEWSETTINGS <<EOF;
         'OPTIONS': {
@@ -77,6 +78,7 @@ while (<SETTINGS>) {
             'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
         },
 EOF
+    $dbname = 1;
   } elsif (/'PASSWORD'/) {
       next;
   } elsif (/'HOST'/) {
@@ -150,10 +152,10 @@ print "Creating your superuser account... ";
 system qw{./manage.py createsuperuser --username}, $admin_username, "--email", $email, "--noinput" and die "Failed to create user: $!";
 print "done\n";
 print "Setting your superuser password... ";
-open CHPASSWD, "|-", qw{setsid ./manage.py changepassword}, $admin_username or die "Failed to set password: $!";
-print CHPASSWD "$admin_password\n";
-print CHPASSWD "$admin_password\n";
-close CHPASSWD or die "Failed to set password: $!";
+open my $chpasswd, "|-", qw{setsid ./manage.py changepassword}, $admin_username or die "Failed to set password: $!";
+print $chpasswd "$admin_password\n";
+print $chpasswd "$admin_password\n";
+close $chpasswd or die "Failed to set password: $!";
 wait;
 print "done\n";
 
