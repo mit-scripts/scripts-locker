@@ -71,7 +71,12 @@ while (<SETTINGS>) {
     $_ = "        'ENGINE': 'django.db.backends.mysql',";
   } elsif  (/'NAME'/) {
     $_ = "        'NAME': '$sqldb',";
-    print NEWSETTINGS "        'OPTIONS': {\n            'read_default_file' : os.path.expanduser('~/.my.cnf'),\n        },";
+    print NEWSETTINGS <<EOF;
+        'OPTIONS': {
+            'read_default_file' : os.path.expanduser('~/.my.cnf'),
+            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
+        },
+EOF
   } elsif (/'PASSWORD'/) {
       next;
   } elsif (/'HOST'/) {
@@ -86,14 +91,23 @@ while (<SETTINGS>) {
     $_ .= "\n    'django.contrib.admindocs',";
   } elsif (/^MIDDLEWARE/) {
     print NEWSETTINGS <<EOF;
+# Django requires a list of hosts this site is served from; since users can
+# add new hosts with Pony at any time, we just trust SERVER_NAME (set by
+# Apache) to be the correct hostname. If you want to restrict which virtual
+# hosts your application, can run on, disable this middleware and set
+# ALLOWED_HOSTS by hand.
 class AllowedHostsMiddleware:
-    def __init__(self, get_response):
+    def __init__(self, get_response=None):
         self.get_response = get_response
-    def __call__(self, request):
+    def process_request(self, request):
+        # Django 1.6
         global ALLOWED_HOSTS
         name = request.META.get('SERVER_NAME')
         if name and name not in ALLOWED_HOSTS:
             ALLOWED_HOSTS.append(name)
+    def __call__(self, request):
+        # Django 1.11+
+        self.process_request(request)
         return self.get_response(request)
 EOF
     $_ .= "\n    '$name.settings.AllowedHostsMiddleware',";
@@ -127,15 +141,20 @@ print "Initializing your project's SQL database schema...\n";
 chmod 0755, "manage.py";
 # Django 1.6 has syncdb, Django 1.11 has migrate.
 # Run migrate if syncdb returns an error.
-system qw{./manage.py syncdb --noinput}
-  and system qw{./manage.py migrate --noinput};
+if (system qw{./manage.py syncdb --noinput}) {
+  system qw{./manage.py migrate --noinput};
+}
 print "...done\n";
 
 print "Creating your superuser account... ";
-system qw{./manage.py createsuperuser --username}, $admin_username, "--email", $email, "--noinput";
+system qw{./manage.py createsuperuser --username}, $admin_username, "--email", $email, "--noinput" and die "Failed to create user: $!";
 print "done\n";
 print "Setting your superuser password... ";
-system qw{mysql -D}, "$USER+$addrlast", "-e", "UPDATE auth_user SET password=MD5(\'$admin_password\') WHERE username=\'$admin_username\'";
+open CHPASSWD, "|-", qw{setsid ./manage.py changepassword}, $admin_username or die "Failed to set password: $!";
+print CHPASSWD "$admin_password\n";
+print CHPASSWD "$admin_password\n";
+close CHPASSWD or die "Failed to set password: $!";
+wait;
 print "done\n";
 
 print "\nDjango has been installed. The setup is roughly what's described\n";
