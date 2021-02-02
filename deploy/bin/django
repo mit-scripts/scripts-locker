@@ -74,9 +74,9 @@ while (<SETTINGS>) {
   } elsif (/^ADMIN_MEDIA_PREFIX/) {
     $_ = "ADMIN_MEDIA_PREFIX = '/__scripts/django/media/'";
   } elsif (/^STATIC_URL/) {
-    $_ = "STATIC_URL = '/__scripts/django/media'";
+    $_ = "STATIC_URL = '/__scripts/django/media/'";
   } elsif (/^INSTALLED_APPS/) {
-    $_ = "INSTALLED_APPS = (\n    'django.contrib.admindocs',";
+    $_ .= "\n    'django.contrib.admindocs',";
   }
   print NEWSETTINGS "$_\n";
 }
@@ -117,10 +117,10 @@ print "done\n";
 
 print "\nDjango has been installed. The setup is roughly what's described\n";
 print "in the shared-hosting section of\n";
-print "  http://docs.djangoproject.com/en/dev/howto/deployment/fastcgi/\n";
+print "  https://django-doc-test1.readthedocs.io/en/stable-1.6.x/howto/deployment/fastcgi.html\n";
 print "We've also enabled the admin app. You can start from the 'Creating\n";
 print "models' step of the Django tutorial:\n";
-print "  http://docs.djangoproject.com/en/dev/intro/tutorial01/#id3\n\n";
+print "  https://django-doc-test1.readthedocs.io/en/stable-1.6.x/intro/tutorial01.html#creating-models\n\n";
 print "Your project is located in:\n";
 print "  /mit/$USER/Scripts/django/$name/\n";
 print "To access manage.py, run 'ssh -k $USER\@scripts' and cd to the above directory.\n\n";
